@@ -1,3 +1,4 @@
+
 import { Level, GameObject, Player, Platform, Coin, Enemy, Boss, GameCallbacks } from './types';
 
 class GameEngine {
@@ -151,7 +152,9 @@ class GameEngine {
       if (this.boss.health <= 0 && !this.bossDefeated) {
         this.bossDefeated = true;
         this.callbacks.onBossDefeated?.();
-        this.callbacks.onLevelComplete?.();
+        setTimeout(() => {
+          this.callbacks.onLevelComplete?.();
+        }, 500);
         this.stop();
         return;
       }

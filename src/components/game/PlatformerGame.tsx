@@ -45,11 +45,14 @@ const PlatformerGame: React.FC = () => {
       onScoreChange: (score) => setGameState(prev => ({ ...prev, score })),
       onLifeLost: () => {
         playSound('rimshot');
-        setGameState(prev => ({ 
-          ...prev, 
-          lives: prev.lives - 1,
-          gameOver: prev.lives <= 1
-        }));
+        setGameState(prev => { 
+          const newLives = prev.lives - 1;
+          return { 
+            ...prev, 
+            lives: newLives,
+            gameOver: newLives <= 0  // Only game over when lives reach 0
+          };
+        });
       },
       onCoinCollect: () => {
         playSound('hihat');
@@ -66,7 +69,8 @@ const PlatformerGame: React.FC = () => {
           });
           setGameState(prev => ({ 
             ...prev,
-            victory: true
+            victory: true,
+            isRunning: false  // Stop the game
           }));
         } else {
           toast({
@@ -96,7 +100,12 @@ const PlatformerGame: React.FC = () => {
       },
       onBossDefeated: () => {
         playSound('scratch');
-        setGameState(prev => ({ ...prev, score: prev.score + 200 }));
+        setGameState(prev => ({ 
+          ...prev, 
+          score: prev.score + 200,
+          victory: true,
+          isRunning: false
+        }));
       }
     });
     
