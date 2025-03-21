@@ -24,6 +24,8 @@ const Tutorial = () => {
     const timeouts: NodeJS.Timeout[] = [];
     pattern.pattern.forEach(item => {
       const timeout = setTimeout(() => {
+        // Make sure we're using the correct playSound function 
+        // that calls markSoundPlayed internally
         playSound(item.soundId);
       }, item.timing);
       timeouts.push(timeout);

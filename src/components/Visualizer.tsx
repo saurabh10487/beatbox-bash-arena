@@ -18,8 +18,10 @@ const Visualizer = ({ isActive }: VisualizerProps) => {
       setIsActuallyActive(true);
       // Auto-deactivate after 300ms unless isActive remains true
       const timer = setTimeout(() => {
-        setIsActuallyActive(false);
-      }, 300);
+        if (!isActive) {
+          setIsActuallyActive(false);
+        }
+      }, 500);
       
       return () => clearTimeout(timer);
     }
