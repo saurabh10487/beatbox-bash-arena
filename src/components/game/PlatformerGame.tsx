@@ -71,8 +71,9 @@ const PlatformerGame: React.FC = () => {
         } else {
           toast({
             title: "Level Complete!",
-            description: `Score: ${gameState.score}`,
+            description: `Moving to level ${gameState.level + 1}. Score: ${gameState.score}`,
           });
+          // Move to next level without restarting the game
           setGameState(prev => ({ 
             ...prev, 
             level: prev.level + 1
@@ -117,7 +118,7 @@ const PlatformerGame: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     
     return () => {
-      engine.stop();
+      engine.cleanup();
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [canvasRef, gameState.gameOver, gameState.victory, gameState.level, toast]);

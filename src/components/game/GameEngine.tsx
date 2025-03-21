@@ -92,7 +92,7 @@ class GameEngine {
         y: level.boss.y || 0,
         width: level.boss.width || 80,
         height: level.boss.height || 80,
-        velocityX: level.boss.velocityX || 0,
+        velocityX: level.boss.velocityX || 2,
         velocityY: level.boss.velocityY || 0,
         health: level.boss.health || 5,
         color: level.boss.color || '#8B5CF6',
