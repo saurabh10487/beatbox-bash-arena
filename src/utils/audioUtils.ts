@@ -1,3 +1,4 @@
+
 import { playGeneratedSound } from './placeholderSounds';
 
 export interface Sound {
@@ -35,18 +36,6 @@ export const preloadSounds = () => {
   });
   
   return Promise.resolve(); // Always resolve immediately
-};
-
-// Play a sound by ID - use generated sounds instead of audio files
-export const playSound = (soundId: string) => {
-  try {
-    // Use the generated sounds
-    const source = playGeneratedSound(soundId);
-    return source as unknown as HTMLAudioElement; // Type casting for compatibility
-  } catch (err) {
-    console.error("Error playing sound:", err);
-    return null;
-  }
 };
 
 // Create audio context for visualization
@@ -109,11 +98,22 @@ export const markSoundPlayed = () => {
   lastActiveTime = Date.now();
 };
 
-// Update the playSound function to mark when a sound is played
-const originalPlaySound = playSound;
+// Define the base function that plays the sound
+const playGeneratedSoundInternal = (soundId: string) => {
+  try {
+    // Use the generated sounds
+    const source = playGeneratedSound(soundId);
+    return source as unknown as HTMLAudioElement; // Type casting for compatibility
+  } catch (err) {
+    console.error("Error playing sound:", err);
+    return null;
+  }
+};
+
+// Export the wrapped version that also marks the sound as played
 export const playSound = (soundId: string) => {
   markSoundPlayed(); // Mark that a sound was played
-  return originalPlaySound(soundId);
+  return playGeneratedSoundInternal(soundId);
 };
 
 // Simple recording functionality
