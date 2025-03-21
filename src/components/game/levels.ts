@@ -1,4 +1,3 @@
-
 import { Level } from './types';
 
 export const initialLevel: Level = {
@@ -98,8 +97,8 @@ export const level3: Level = {
     { x: 400, y: 300, width: 60, height: 20, color: '#9b59b6' },
     { x: 500, y: 250, width: 60, height: 20, color: '#9b59b6' },
     { x: 600, y: 200, width: 60, height: 20, color: '#9b59b6' },
-    // Final platform
-    { x: 700, y: 150, width: 100, height: 20, color: '#9b59b6' },
+    // Boss arena
+    { x: 700, y: 300, width: 700, height: 20, color: '#9b59b6' },
     // Alternative path
     { x: 150, y: 300, width: 40, height: 20, color: '#9b59b6' },
     { x: 250, y: 230, width: 40, height: 20, color: '#9b59b6' },
@@ -120,8 +119,6 @@ export const level3: Level = {
     { x: 360, y: 150, width: 20, height: 20, color: '#f1c40f' },
     { x: 460, y: 100, width: 20, height: 20, color: '#f1c40f' },
     { x: 590, y: 70, width: 20, height: 20, color: '#f1c40f' },
-    // Victory coin
-    { x: 740, y: 120, width: 30, height: 30, color: '#f39c12' },
   ],
   enemies: [
     // Guarding enemies
@@ -131,8 +128,23 @@ export const level3: Level = {
     // More challenging enemies
     { x: 100, y: 370, width: 40, height: 40, velocityX: 1.2, color: '#c0392b' },
     { x: 300, y: 320, width: 35, height: 35, velocityX: 1.5, color: '#c0392b' },
-  ]
+  ],
+  boss: {
+    x: 1050,
+    y: 230,
+    width: 80,
+    height: 80,
+    velocityX: 0,
+    velocityY: 0,
+    health: 5,
+    color: '#8B5CF6',
+    phase: 1,
+    isActive: false,
+    attackCooldown: 2,
+    attackTimer: 0
+  },
+  isBossLevel: true
 };
 
-// We export just the initialLevel for now
+// We export the initialLevel for now
 // The game engine will use level2 and level3 based on player progression

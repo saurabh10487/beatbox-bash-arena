@@ -25,14 +25,26 @@ export interface Enemy extends GameObject {
   velocityX: number;
 }
 
+export interface Boss extends GameObject {
+  health: number;
+  velocityX: number;
+  velocityY: number;
+  attackCooldown: number;
+  attackTimer: number;
+  phase: number;
+  isActive: boolean;
+}
+
 export interface Level {
   playerStart: {
     x: number;
     y: number;
   };
   platforms: Platform[];
-  coins: Partial<Coin>[];  // Changed from Coin[] to Partial<Coin>[]
-  enemies: Partial<Enemy>[];  // Changed from Enemy[] to Partial<Enemy>[]
+  coins: Partial<Coin>[];
+  enemies: Partial<Enemy>[];
+  boss?: Partial<Boss>;
+  isBossLevel?: boolean;
 }
 
 export interface GameState {
@@ -51,4 +63,6 @@ export interface GameCallbacks {
   onLevelComplete?: () => void;
   onPlayerJump?: () => void;
   onPlayerLand?: () => void;
+  onBossHit?: () => void;
+  onBossDefeated?: () => void;
 }

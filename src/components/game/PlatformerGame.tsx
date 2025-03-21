@@ -4,7 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { sounds, playSound } from '../../utils/audioUtils';
 import GameEngine from './GameEngine';
 import { Level, GameState } from './types';
-import { initialLevel } from './levels';
+import { initialLevel, level2, level3 } from './levels';
 
 const PlatformerGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,8 +27,21 @@ const PlatformerGame: React.FC = () => {
     const context = canvas.getContext('2d');
     if (!context) return;
     
-    // Create game engine with initial level
-    const engine = new GameEngine(canvas, context, initialLevel, {
+    // Determine current level based on gameState.level
+    let currentLevel: Level;
+    switch (gameState.level) {
+      case 2:
+        currentLevel = level2;
+        break;
+      case 3:
+        currentLevel = level3;
+        break;
+      default:
+        currentLevel = initialLevel;
+    }
+    
+    // Create game engine with the appropriate level
+    const engine = new GameEngine(canvas, context, currentLevel, {
       onScoreChange: (score) => setGameState(prev => ({ ...prev, score })),
       onLifeLost: () => {
         playSound('rimshot');
@@ -44,21 +57,45 @@ const PlatformerGame: React.FC = () => {
       },
       onLevelComplete: () => {
         playSound('vocal');
-        toast({
-          title: "Level Complete!",
-          description: `Score: ${gameState.score}`,
-        });
-        setGameState(prev => ({ 
-          ...prev, 
-          level: prev.level + 1,
-          victory: prev.level >= 3 // Victory after 3 levels
-        }));
+        
+        // Final level victory
+        if (gameState.level >= 3) {
+          toast({
+            title: "Victory!",
+            description: `You beat the boss! Final Score: ${gameState.score}`,
+          });
+          setGameState(prev => ({ 
+            ...prev,
+            victory: true
+          }));
+        } else {
+          toast({
+            title: "Level Complete!",
+            description: `Score: ${gameState.score}`,
+          });
+          setGameState(prev => ({ 
+            ...prev, 
+            level: prev.level + 1
+          }));
+        }
       },
       onPlayerJump: () => {
         playSound('kick');
       },
       onPlayerLand: () => {
         playSound('bass');
+      },
+      onBossHit: () => {
+        playSound('snare');
+        setGameState(prev => ({ ...prev, score: prev.score + 50 }));
+        toast({
+          title: "Direct Hit!",
+          description: "You damaged the boss!",
+        });
+      },
+      onBossDefeated: () => {
+        playSound('scratch');
+        setGameState(prev => ({ ...prev, score: prev.score + 200 }));
       }
     });
     
@@ -83,7 +120,7 @@ const PlatformerGame: React.FC = () => {
       engine.stop();
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [canvasRef, gameState.gameOver, gameState.victory, gameState.level]);
+  }, [canvasRef, gameState.gameOver, gameState.victory, gameState.level, toast]);
   
   const restartGame = () => {
     playSound('clap');
@@ -145,6 +182,7 @@ const PlatformerGame: React.FC = () => {
         {gameState.victory && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-white">
             <h2 className="text-3xl font-bold mb-4">Victory!</h2>
+            <p className="mb-4">You defeated the Boss!</p>
             <p className="mb-4">Final Score: {gameState.score}</p>
             <button 
               onClick={restartGame}
@@ -153,6 +191,14 @@ const PlatformerGame: React.FC = () => {
               Play Again
             </button>
           </div>
+        )}
+      </div>
+      
+      <div className="mt-6 text-sm text-center text-gray-600">
+        {gameState.level === 3 && (
+          <p className="mb-2 font-bold text-red-500">
+            Boss Level: Jump on the boss's head to damage it! Watch out for projectiles!
+          </p>
         )}
       </div>
     </div>
