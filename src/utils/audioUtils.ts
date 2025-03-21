@@ -1,4 +1,3 @@
-
 import { playGeneratedSound } from './placeholderSounds';
 
 export interface Sound {
@@ -53,6 +52,7 @@ export const playSound = (soundId: string) => {
 // Create audio context for visualization
 let audioContext: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
+let lastActiveTime = 0;
 
 // Using a different name to avoid conflict with the imported function
 export const getVisualizerAudioContext = (): { context: AudioContext; analyser: AnalyserNode } => {
@@ -77,17 +77,21 @@ export const connectToAnalyser = (audioElement: HTMLAudioElement) => {
 
 // Get frequency data for visualization - now uses a simulated approach
 export const getFrequencyData = () => {
-  if (!analyser) {
-    // Create a fake frequency response when analyzer isn't connected
+  // Update the last active time when sounds are played
+  const now = Date.now();
+  const isActive = now - lastActiveTime < 300; // Consider active for 300ms after last sound
+  
+  if (!analyser || !isActive) {
+    // Create a minimal frequency response when analyzer isn't connected or inactive
     const dataArray = new Uint8Array(128);
     for (let i = 0; i < 128; i++) {
-      // Create a realistic-looking frequency response
+      // Create a minimal baseline visualization
       const position = i / 128;
-      const baseLine = 30; // Base activity level
-      const randomFactor = Math.random() * 20; // Some randomness
+      const baseLine = 10; // Lower base activity level when inactive
+      const randomFactor = Math.random() * 5; // Less randomness
       
-      // Shape the response with a curve
-      const curve = Math.sin(position * Math.PI) * 150;
+      // More subtle curve
+      const curve = Math.sin(position * Math.PI) * 20;
       
       dataArray[i] = Math.min(255, Math.max(0, baseLine + randomFactor + curve));
     }
@@ -98,6 +102,18 @@ export const getFrequencyData = () => {
   const dataArray = new Uint8Array(bufferLength);
   analyser.getByteFrequencyData(dataArray);
   return dataArray;
+};
+
+// Mark a sound as being played (for visualization purposes)
+export const markSoundPlayed = () => {
+  lastActiveTime = Date.now();
+};
+
+// Update the playSound function to mark when a sound is played
+const originalPlaySound = playSound;
+export const playSound = (soundId: string) => {
+  markSoundPlayed(); // Mark that a sound was played
+  return originalPlaySound(soundId);
 };
 
 // Simple recording functionality

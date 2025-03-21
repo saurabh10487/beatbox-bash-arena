@@ -1,5 +1,5 @@
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { getFrequencyData } from '../utils/audioUtils';
 
 interface VisualizerProps {
@@ -9,6 +9,21 @@ interface VisualizerProps {
 const Visualizer = ({ isActive }: VisualizerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>();
+  // Add a timer to automatically deactivate visualization after a short period
+  const [isActuallyActive, setIsActuallyActive] = useState(false);
+  
+  // Use effect to manage the active state with auto-deactivation
+  useEffect(() => {
+    if (isActive) {
+      setIsActuallyActive(true);
+      // Auto-deactivate after 300ms unless isActive remains true
+      const timer = setTimeout(() => {
+        setIsActuallyActive(false);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isActive]);
 
   const renderFrame = () => {
     const canvas = canvasRef.current;
@@ -52,7 +67,7 @@ const Visualizer = ({ isActive }: VisualizerProps) => {
     for (let i = 0; i < barCount; i++) {
       // Generate a gentle wave pattern
       const time = Date.now() * 0.001;
-      const amplitude = isActive ? 50 : 20;
+      const amplitude = isActuallyActive ? 50 : 20;
       const frequency = 0.15;
       const phase = i / barCount * Math.PI * 2;
       const sinValue = Math.sin(time + phase * frequency);
@@ -129,7 +144,7 @@ const Visualizer = ({ isActive }: VisualizerProps) => {
       }
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [isActive]);
+  }, [isActuallyActive]); // Now depends on isActuallyActive instead of isActive
 
   return (
     <div className="w-full h-32 md:h-40 bg-beatbox-muted/50 rounded-2xl overflow-hidden shadow-inner">
