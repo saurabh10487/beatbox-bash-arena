@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Volume2, Info, Music } from 'lucide-react';
+import { Volume2, Info, Music, Gamepad } from 'lucide-react';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -34,6 +34,12 @@ const Header = () => {
           <NavLink to="/" exact>Studio</NavLink>
           <NavLink to="/tutorial">Learn</NavLink>
           <NavLink to="/challenge">Challenge</NavLink>
+          <NavLink to="/game">
+            <span className="flex items-center gap-1">
+              <Gamepad className="h-4 w-4" />
+              Game
+            </span>
+          </NavLink>
         </nav>
         
         <div className="flex items-center gap-2">
