@@ -134,7 +134,7 @@ export const level3: Level = {
     y: 230,
     width: 80,
     height: 80,
-    velocityX: 0,
+    velocityX: 2,
     velocityY: 0,
     health: 5,
     color: '#8B5CF6',

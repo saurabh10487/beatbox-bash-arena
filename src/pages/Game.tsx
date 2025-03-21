@@ -10,7 +10,7 @@ const Game = () => {
   useEffect(() => {
     toast({
       title: "Game Ready!",
-      description: "Use arrow keys to move, space to jump.",
+      description: "Use arrow keys to move, space to jump. Reach level 3 to face the boss!",
     });
   }, [toast]);
 
