@@ -31,8 +31,8 @@ export interface Level {
     y: number;
   };
   platforms: Platform[];
-  coins: Partial<Coin>[];
-  enemies: Partial<Enemy>[];
+  coins: Partial<Coin>[];  // Changed from Coin[] to Partial<Coin>[]
+  enemies: Partial<Enemy>[];  // Changed from Enemy[] to Partial<Enemy>[]
 }
 
 export interface GameState {
