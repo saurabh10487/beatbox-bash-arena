@@ -61,18 +61,20 @@ class GameEngine {
       color: platform.color || '#2ecc71'
     }));
     
-    // Initialize coins
+    // Initialize coins - ensuring all required properties are set
     this.coins = level.coins.map(coin => ({
-      ...coin,
+      x: coin.x || 0,
+      y: coin.y || 0,
       width: coin.width || 20,
       height: coin.height || 20,
       collected: false,
       color: coin.color || '#f1c40f'
     }));
     
-    // Initialize enemies
+    // Initialize enemies - ensuring all required properties are set
     this.enemies = level.enemies.map(enemy => ({
-      ...enemy,
+      x: enemy.x || 0,
+      y: enemy.y || 0,
       width: enemy.width || 30,
       height: enemy.height || 30,
       velocityX: enemy.velocityX || 2,
