@@ -1,5 +1,5 @@
 
-import { playGeneratedSound, getAudioContext } from './placeholderSounds';
+import { playGeneratedSound } from './placeholderSounds';
 
 export interface Sound {
   id: string;
@@ -54,7 +54,8 @@ export const playSound = (soundId: string) => {
 let audioContext: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
 
-export const getAudioContext = (): { context: AudioContext; analyser: AnalyserNode } => {
+// Using a different name to avoid conflict with the imported function
+export const getVisualizerAudioContext = (): { context: AudioContext; analyser: AnalyserNode } => {
   if (!audioContext) {
     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     analyser = audioContext.createAnalyser();
@@ -67,7 +68,7 @@ export const getAudioContext = (): { context: AudioContext; analyser: AnalyserNo
 // Connect an audio element to the analyzer
 export const connectToAnalyser = (audioElement: HTMLAudioElement) => {
   // This function is not used with our generated sounds, but kept for compatibility
-  const { context, analyser } = getAudioContext();
+  const { context, analyser } = getVisualizerAudioContext();
   
   // For generated sounds, we would connect the source directly
   // But for compatibility, we'll just return the analyser
