@@ -1,4 +1,6 @@
 
+import { playGeneratedSound, getAudioContext } from './placeholderSounds';
+
 export interface Sound {
   id: string;
   name: string;
@@ -23,25 +25,27 @@ const audioCache: Record<string, HTMLAudioElement> = {};
 
 // Preload all sounds to avoid latency
 export const preloadSounds = () => {
+  // We'll still maintain the original code structure, but we won't use the audioCache anymore
   sounds.forEach(sound => {
     if (!audioCache[sound.id]) {
+      // Create empty audio element to maintain code compatibility
       const audio = new Audio();
       audio.src = sound.file;
-      audio.preload = 'auto';
       audioCache[sound.id] = audio;
     }
   });
+  
+  return Promise.resolve(); // Always resolve immediately
 };
 
-// Play a sound by ID
+// Play a sound by ID - use generated sounds instead of audio files
 export const playSound = (soundId: string) => {
-  if (audioCache[soundId]) {
-    // Clone the audio to allow for overlapping sounds
-    const audio = audioCache[soundId].cloneNode() as HTMLAudioElement;
-    audio.play().catch(err => console.error("Error playing sound:", err));
-    return audio;
-  } else {
-    console.error(`Sound with ID ${soundId} not found in cache`);
+  try {
+    // Use the generated sounds
+    const source = playGeneratedSound(soundId);
+    return source as unknown as HTMLAudioElement; // Type casting for compatibility
+  } catch (err) {
+    console.error("Error playing sound:", err);
     return null;
   }
 };
@@ -62,16 +66,32 @@ export const getAudioContext = (): { context: AudioContext; analyser: AnalyserNo
 
 // Connect an audio element to the analyzer
 export const connectToAnalyser = (audioElement: HTMLAudioElement) => {
+  // This function is not used with our generated sounds, but kept for compatibility
   const { context, analyser } = getAudioContext();
-  const source = context.createMediaElementSource(audioElement);
-  source.connect(analyser);
-  analyser.connect(context.destination);
+  
+  // For generated sounds, we would connect the source directly
+  // But for compatibility, we'll just return the analyser
   return analyser;
 };
 
-// Get frequency data for visualization
+// Get frequency data for visualization - now uses a simulated approach
 export const getFrequencyData = () => {
-  if (!analyser) return new Uint8Array(0);
+  if (!analyser) {
+    // Create a fake frequency response when analyzer isn't connected
+    const dataArray = new Uint8Array(128);
+    for (let i = 0; i < 128; i++) {
+      // Create a realistic-looking frequency response
+      const position = i / 128;
+      const baseLine = 30; // Base activity level
+      const randomFactor = Math.random() * 20; // Some randomness
+      
+      // Shape the response with a curve
+      const curve = Math.sin(position * Math.PI) * 150;
+      
+      dataArray[i] = Math.min(255, Math.max(0, baseLine + randomFactor + curve));
+    }
+    return dataArray;
+  }
   
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);

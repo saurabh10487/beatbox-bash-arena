@@ -1,3 +1,17 @@
 
-# This file ensures the sounds directory is created
-# Replace with actual sound files
+# Sound Files Directory
+
+This directory should contain the following sound files:
+- kick.mp3
+- snare.mp3
+- hihat.mp3
+- clap.mp3
+- bass.mp3
+- vocal.mp3
+- scratch.mp3
+- rimshot.mp3
+
+Currently, we're using programmatically generated sounds through the Web Audio API
+as a fallback since the actual sound files aren't available.
+
+To use real sound files, place MP3 files with these names in this directory.
