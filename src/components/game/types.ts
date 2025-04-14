@@ -11,6 +11,7 @@ export interface Player extends GameObject {
   velocityX: number;
   velocityY: number;
   isOnGround: boolean;
+  spriteState?: 'idle' | 'walk' | 'jump' | 'fall';
 }
 
 export interface Platform extends GameObject {
@@ -19,10 +20,12 @@ export interface Platform extends GameObject {
 
 export interface Coin extends GameObject {
   collected: boolean;
+  type?: number; // 0 = gold, 1 = silver, 2 = bronze
 }
 
 export interface Enemy extends GameObject {
   velocityX: number;
+  spriteState?: 'idle' | 'walk' | 'attack';
 }
 
 export interface Boss extends GameObject {
@@ -33,6 +36,7 @@ export interface Boss extends GameObject {
   attackTimer: number;
   phase: number;
   isActive: boolean;
+  spriteState?: 'idle' | 'active' | 'angry' | 'enraged';
 }
 
 export interface Level {

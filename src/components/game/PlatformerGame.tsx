@@ -27,6 +27,9 @@ const PlatformerGame: React.FC = () => {
     const context = canvas.getContext('2d');
     if (!context) return;
     
+    // Apply pixel art rendering style
+    context.imageSmoothingEnabled = false; // Crucial for pixel art look
+    
     // Determine current level based on gameState.level
     let currentLevel: Level;
     switch (gameState.level) {
@@ -153,36 +156,36 @@ const PlatformerGame: React.FC = () => {
     <div className="flex flex-col items-center">
       <div className="flex justify-between w-full mb-4">
         <div className="flex gap-4">
-          <div className="bg-gray-100 px-3 py-1 rounded-md">
+          <div className="bg-gray-800 px-3 py-1 rounded-md text-yellow-300 font-pixelated border-2 border-yellow-500">
             Score: <span className="font-bold">{gameState.score}</span>
           </div>
-          <div className="bg-gray-100 px-3 py-1 rounded-md">
+          <div className="bg-gray-800 px-3 py-1 rounded-md text-yellow-300 font-pixelated border-2 border-yellow-500">
             Level: <span className="font-bold">{gameState.level}</span>
           </div>
         </div>
         <div className="flex items-center">
-          <span className="mr-2">Lives:</span>
+          <span className="mr-2 text-yellow-300 font-pixelated">Lives:</span>
           {[...Array(gameState.lives)].map((_, i) => (
-            <div key={i} className="w-5 h-5 bg-red-500 rounded-full mx-0.5"></div>
+            <div key={i} className="w-5 h-5 bg-red-500 rounded-none mx-0.5 pixelated-heart"></div>
           ))}
         </div>
       </div>
       
-      <div className="relative border-4 border-beatbox-muted rounded-md overflow-hidden bg-gradient-to-b from-blue-100 to-blue-200">
+      <div className="relative border-4 border-gray-900 rounded-none overflow-hidden bg-gradient-to-b from-blue-900 to-black pixelated-border">
         <canvas 
           ref={canvasRef} 
           width={800} 
           height={450}
-          className="bg-transparent"
+          className="bg-transparent pixelated"
         />
         
         {gameState.gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-white">
-            <h2 className="text-3xl font-bold mb-4">Game Over</h2>
-            <p className="mb-4">Final Score: {gameState.score}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
+            <h2 className="text-3xl font-bold mb-4 text-red-500 font-pixelated pixelated-text">Game Over</h2>
+            <p className="mb-4 font-pixelated">Final Score: {gameState.score}</p>
             <button 
               onClick={restartGame}
-              className="px-4 py-2 bg-beatbox-primary text-white rounded-md hover:bg-beatbox-primary/80"
+              className="px-4 py-2 bg-yellow-500 text-black rounded-none hover:bg-yellow-400 font-pixelated pixelated-button"
             >
               Play Again
             </button>
@@ -190,13 +193,13 @@ const PlatformerGame: React.FC = () => {
         )}
         
         {gameState.victory && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-white">
-            <h2 className="text-3xl font-bold mb-4">Victory!</h2>
-            <p className="mb-4">You defeated the Boss!</p>
-            <p className="mb-4">Final Score: {gameState.score}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
+            <h2 className="text-3xl font-bold mb-4 text-green-400 font-pixelated pixelated-text">Victory!</h2>
+            <p className="mb-4 font-pixelated">You defeated the Boss!</p>
+            <p className="mb-4 font-pixelated">Final Score: {gameState.score}</p>
             <button 
               onClick={restartGame}
-              className="px-4 py-2 bg-beatbox-primary text-white rounded-md hover:bg-beatbox-primary/80"
+              className="px-4 py-2 bg-yellow-500 text-black rounded-none hover:bg-yellow-400 font-pixelated pixelated-button"
             >
               Play Again
             </button>
@@ -204,9 +207,9 @@ const PlatformerGame: React.FC = () => {
         )}
       </div>
       
-      <div className="mt-6 text-sm text-center text-gray-600">
+      <div className="mt-6 text-sm text-center text-gray-200">
         {gameState.level === 3 && (
-          <p className="mb-2 font-bold text-red-500">
+          <p className="mb-2 font-bold text-red-500 font-pixelated">
             Boss Level: Jump on the boss's head to damage it! Watch out for projectiles!
           </p>
         )}

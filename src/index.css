@@ -1,5 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -108,4 +109,65 @@ html {
 
 .page-transition {
   animation: page-transition-in 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Pixel art styling */
+.font-pixelated {
+  font-family: 'Press Start 2P', cursive;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.pixelated-border {
+  box-shadow: 0 0 0 4px #000000, 0 0 0 8px #333333;
+}
+
+.pixelated-heart {
+  position: relative;
+  transform: rotate(45deg);
+}
+
+.pixelated-heart:before,
+.pixelated-heart:after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: #FF0000;
+}
+
+.pixelated-heart:before {
+  top: 0;
+  left: -2.5px;
+}
+
+.pixelated-heart:after {
+  top: -2.5px;
+  left: 0;
+}
+
+.pixelated-text {
+  text-shadow: 2px 2px 0 #000000;
+}
+
+.pixelated-button {
+  position: relative;
+  box-shadow: 4px 4px 0 #000000;
+  transition: all 0.1s;
+  image-rendering: pixelated;
+}
+
+.pixelated-button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000000;
+}
+
+.pixelated-button:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
