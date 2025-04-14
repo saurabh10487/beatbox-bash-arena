@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Mic, Music, Play, Volume } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import Header from '../components/Header';
 import PlatformerGame from '../components/game/PlatformerGame';
 import BeatPad from '../components/BeatPad';
@@ -48,36 +48,42 @@ const Game = () => {
           
           {/* Navigation tabs */}
           <div className="flex justify-center gap-2 mt-6">
-            <button 
+            <Button 
               onClick={() => setActiveTab('game')}
-              className={`px-4 py-2 font-pixelated text-sm transition-all duration-200 ${
+              variant={activeTab === 'game' ? 'default' : 'secondary'}
+              className={`font-pixelated text-sm transition-all duration-200 ${
                 activeTab === 'game' 
-                  ? 'bg-yellow-500 text-black pixelated-button' 
-                  : 'bg-gray-800 text-gray-400 hover:text-gray-300 pixelated-button'
+                  ? 'bg-yellow-500 text-black hover:bg-yellow-400' 
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-300'
               }`}
             >
+              <Play className="w-4 h-4 mr-2" />
               Platformer Game
-            </button>
-            <button 
+            </Button>
+            <Button 
               onClick={() => setActiveTab('beatbox')}
-              className={`px-4 py-2 font-pixelated text-sm transition-all duration-200 ${
+              variant={activeTab === 'beatbox' ? 'default' : 'secondary'}
+              className={`font-pixelated text-sm transition-all duration-200 ${
                 activeTab === 'beatbox' 
-                  ? 'bg-yellow-500 text-black pixelated-button' 
-                  : 'bg-gray-800 text-gray-400 hover:text-gray-300 pixelated-button'
+                  ? 'bg-yellow-500 text-black hover:bg-yellow-400' 
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-300'
               }`}
             >
+              <Volume className="w-4 h-4 mr-2" />
               Beat Studio
-            </button>
-            <button 
+            </Button>
+            <Button 
               onClick={() => setActiveTab('music')}
-              className={`px-4 py-2 font-pixelated text-sm transition-all duration-200 ${
+              variant={activeTab === 'music' ? 'default' : 'secondary'}
+              className={`font-pixelated text-sm transition-all duration-200 ${
                 activeTab === 'music' 
-                  ? 'bg-yellow-500 text-black pixelated-button' 
-                  : 'bg-gray-800 text-gray-400 hover:text-gray-300 pixelated-button'
+                  ? 'bg-yellow-500 text-black hover:bg-yellow-400' 
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-300'
               }`}
             >
+              <Music className="w-4 h-4 mr-2" />
               Music Player
-            </button>
+            </Button>
           </div>
         </div>
         

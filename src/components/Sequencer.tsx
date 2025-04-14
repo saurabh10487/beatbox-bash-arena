@@ -148,32 +148,36 @@ const Sequencer = ({ onPatternChange }: SequencerProps) => {
       
       <div className="flex justify-between mt-4">
         <div className="flex gap-2">
-          {!isPlaying ? (
-            <button
-              onClick={startSequencer}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-beatbox-primary text-white hover:bg-beatbox-primary/90 transition-colors"
-            >
-              <Play size={16} />
-              <span className="text-sm font-medium">Play</span>
-            </button>
-          ) : (
-            <button
-              onClick={stopSequencer}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
-            >
-              <Square size={16} />
-              <span className="text-sm font-medium">Stop</span>
-            </button>
-          )}
+          <Button
+            onClick={isPlaying ? stopSequencer : startSequencer}
+            variant="default"
+            className={isPlaying 
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-beatbox-primary hover:bg-beatbox-primary/90 text-white"
+            }
+          >
+            {isPlaying ? (
+              <>
+                <Square size={16} className="mr-2" />
+                <span className="text-sm font-medium">Stop</span>
+              </>
+            ) : (
+              <>
+                <Play size={16} className="mr-2" />
+                <span className="text-sm font-medium">Play</span>
+              </>
+            )}
+          </Button>
         </div>
         
-        <button
+        <Button
           onClick={clearPattern}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
+          variant="secondary"
+          className="bg-gray-200 text-gray-700 hover:bg-gray-300"
         >
-          <Trash2 size={16} />
+          <Trash2 size={16} className="mr-2" />
           <span className="text-sm font-medium">Clear</span>
-        </button>
+        </Button>
       </div>
     </div>
   );
