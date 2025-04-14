@@ -25,13 +25,20 @@ const audioCache: Record<string, HTMLAudioElement> = {};
 
 // Preload all sounds to avoid latency
 export const preloadSounds = () => {
-  // We'll still maintain the original code structure, but we won't use the audioCache anymore
   sounds.forEach(sound => {
     if (!audioCache[sound.id]) {
-      // Create empty audio element to maintain code compatibility
-      const audio = new Audio();
-      audio.src = sound.file;
-      audioCache[sound.id] = audio;
+      try {
+        // Try to load the actual sound file
+        const audio = new Audio(sound.file);
+        audioCache[sound.id] = audio;
+        
+        // Add error handler to fallback to generated sounds
+        audio.addEventListener('error', () => {
+          console.log(`Falling back to generated sound for ${sound.id}`);
+        });
+      } catch (err) {
+        console.error(`Error preloading sound ${sound.id}:`, err);
+      }
     }
   });
   
@@ -56,12 +63,17 @@ export const getVisualizerAudioContext = (): { context: AudioContext; analyser: 
 
 // Connect an audio element to the analyzer
 export const connectToAnalyser = (audioElement: HTMLAudioElement) => {
-  // This function is not used with our generated sounds, but kept for compatibility
   const { context, analyser } = getVisualizerAudioContext();
   
-  // For generated sounds, we would connect the source directly
-  // But for compatibility, we'll just return the analyser
-  return analyser;
+  try {
+    const source = context.createMediaElementSource(audioElement);
+    source.connect(analyser);
+    analyser.connect(context.destination);
+    return analyser;
+  } catch (err) {
+    console.error("Error connecting to analyser:", err);
+    return analyser;
+  }
 };
 
 // Get frequency data for visualization - now uses a simulated approach
@@ -101,12 +113,31 @@ export const markSoundPlayed = () => {
 // Define the base function that plays the sound
 const playGeneratedSoundInternal = (soundId: string) => {
   try {
-    // Use the generated sounds
-    const source = playGeneratedSound(soundId);
-    return source as unknown as HTMLAudioElement; // Type casting for compatibility
+    // First try to play the cached sound
+    if (audioCache[soundId]) {
+      const audio = audioCache[soundId];
+      audio.currentTime = 0;
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log("Error playing cached sound, falling back to generated sound:", error);
+          // Fallback to generated sound
+          playGeneratedSound(soundId);
+        });
+      }
+      
+      return audio;
+    } else {
+      // Fallback to generated sound
+      const source = playGeneratedSound(soundId);
+      return source as unknown as HTMLAudioElement; // Type casting for compatibility
+    }
   } catch (err) {
-    console.error("Error playing sound:", err);
-    return null;
+    console.error("Error playing sound, falling back to generated sound:", err);
+    // Final fallback
+    const source = playGeneratedSound(soundId);
+    return source as unknown as HTMLAudioElement;
   }
 };
 
@@ -116,16 +147,22 @@ export const playSound = (soundId: string) => {
   return playGeneratedSoundInternal(soundId);
 };
 
-// Simple recording functionality
+// Enhanced recorder with better timing precision
 export class Recorder {
   private recording: Array<{soundId: string, timestamp: number}> = [];
   private startTime: number = 0;
   private isRecording: boolean = false;
+  private patternMode: boolean = false;
+  private timeSignature: [number, number] = [4, 4]; // [beats, beat unit]
+  private tempo: number = 120; // BPM
 
-  startRecording() {
+  startRecording(patternMode = false, tempo = 120, timeSignature: [number, number] = [4, 4]) {
     this.recording = [];
     this.startTime = Date.now();
     this.isRecording = true;
+    this.patternMode = patternMode;
+    this.tempo = tempo;
+    this.timeSignature = timeSignature;
   }
 
   recordSound(soundId: string) {
@@ -141,21 +178,92 @@ export class Recorder {
   }
 
   playRecording(onPlay: (soundId: string) => void) {
-    if (this.recording.length === 0) return;
+    if (this.recording.length === 0) return 0;
     
     const startTime = Date.now();
+    const timeouts: NodeJS.Timeout[] = [];
     
     this.recording.forEach(item => {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         onPlay(item.soundId);
       }, item.timestamp);
+      
+      timeouts.push(timeout);
     });
     
-    // Return the duration of the recording
+    // Return the duration of the recording and cleanup function
     const lastEvent = this.recording[this.recording.length - 1];
-    return lastEvent.timestamp;
+    
+    // Cleanup function to stop playback
+    const cleanup = () => {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
+    
+    return {
+      duration: lastEvent.timestamp,
+      cleanup
+    };
+  }
+
+  // For pattern-based recording (sequencer)
+  getPatternData() {
+    if (!this.patternMode || this.recording.length === 0) return null;
+    
+    // Calculate beat duration in ms
+    const beatDuration = (60 / this.tempo) * 1000;
+    const patternLength = this.timeSignature[0] * 4; // 4 beats for a whole note
+    
+    // Create empty pattern grid
+    const patternGrid: Record<string, boolean[]> = {};
+    sounds.forEach(sound => {
+      patternGrid[sound.id] = Array(patternLength).fill(false);
+    });
+    
+    // Fill in pattern based on recording
+    this.recording.forEach(item => {
+      // Calculate the beat position (quantize)
+      const beatPosition = Math.round(item.timestamp / beatDuration);
+      if (beatPosition < patternLength) {
+        patternGrid[item.soundId][beatPosition] = true;
+      }
+    });
+    
+    return patternGrid;
   }
 }
 
 // Global recorder instance
 export const recorder = new Recorder();
+
+// Add function to analyze microphone input
+export const analyzeMicrophoneInput = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const source = audioContext.createMediaStreamSource(stream);
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    
+    source.connect(analyser);
+    
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    
+    const getAudioData = () => {
+      analyser.getByteFrequencyData(data);
+      return data;
+    };
+    
+    const stopAnalyzing = () => {
+      stream.getTracks().forEach(track => track.stop());
+      source.disconnect();
+    };
+    
+    return {
+      getAudioData,
+      stopAnalyzing
+    };
+  } catch (err) {
+    console.error("Error analyzing microphone input:", err);
+    throw err;
+  }
+};

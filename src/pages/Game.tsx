@@ -1,11 +1,18 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { Mic, Music, Play, Volume } from 'lucide-react';
 import Header from '../components/Header';
 import PlatformerGame from '../components/game/PlatformerGame';
+import BeatPad from '../components/BeatPad';
+import Sequencer from '../components/Sequencer';
+import MicrophoneInput from '../components/MicrophoneInput';
+import MusicPlayer from '../components/MusicPlayer';
+import { sounds, playSound } from '../utils/audioUtils';
 
 const Game = () => {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<'game' | 'beatbox' | 'music'>('game');
 
   useEffect(() => {
     toast({
@@ -30,41 +37,119 @@ const Game = () => {
       <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto page-transition">
         <div className="text-center mb-8">
           <div className="inline-block rounded-none bg-yellow-500 px-3 py-1 text-sm font-pixelated text-black mb-3">
-            BeatBox Platformer
+            BeatBox Studio
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-yellow-300 font-pixelated pixelated-text">
-            Rhythm Jumper
+            Game & Music Studio
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto font-pixelated text-sm">
-            Jump, run, and collect beats in this music-powered platformer game.
+            Play the platformer game, create beats, or listen to music.
           </p>
+          
+          {/* Navigation tabs */}
+          <div className="flex justify-center gap-2 mt-6">
+            <button 
+              onClick={() => setActiveTab('game')}
+              className={`px-4 py-2 font-pixelated text-sm transition-all duration-200 ${
+                activeTab === 'game' 
+                  ? 'bg-yellow-500 text-black pixelated-button' 
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-300 pixelated-button'
+              }`}
+            >
+              Platformer Game
+            </button>
+            <button 
+              onClick={() => setActiveTab('beatbox')}
+              className={`px-4 py-2 font-pixelated text-sm transition-all duration-200 ${
+                activeTab === 'beatbox' 
+                  ? 'bg-yellow-500 text-black pixelated-button' 
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-300 pixelated-button'
+              }`}
+            >
+              Beat Studio
+            </button>
+            <button 
+              onClick={() => setActiveTab('music')}
+              className={`px-4 py-2 font-pixelated text-sm transition-all duration-200 ${
+                activeTab === 'music' 
+                  ? 'bg-yellow-500 text-black pixelated-button' 
+                  : 'bg-gray-800 text-gray-400 hover:text-gray-300 pixelated-button'
+              }`}
+            >
+              Music Player
+            </button>
+          </div>
         </div>
         
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-800 rounded-none shadow-lg border-4 border-gray-900 p-6 pixelated-border">
-            <PlatformerGame />
-          </div>
-          
-          <div className="mt-6 text-center">
-            <div className="bg-gray-800 rounded-none shadow-lg border-2 border-gray-900 p-4 inline-flex gap-4 pixelated-border">
-              <div className="flex flex-col items-center">
-                <div className="text-sm text-gray-400 font-pixelated">Move</div>
-                <div className="flex gap-1 mt-1">
-                  <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated">←</kbd>
-                  <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated">→</kbd>
+        {/* Game View */}
+        {activeTab === 'game' && (
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gray-800 rounded-none shadow-lg border-4 border-gray-900 p-6 pixelated-border">
+              <PlatformerGame />
+            </div>
+            
+            <div className="mt-6 text-center">
+              <div className="bg-gray-800 rounded-none shadow-lg border-2 border-gray-900 p-4 inline-flex gap-4 pixelated-border">
+                <div className="flex flex-col items-center">
+                  <div className="text-sm text-gray-400 font-pixelated">Move</div>
+                  <div className="flex gap-1 mt-1">
+                    <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated">←</kbd>
+                    <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated">→</kbd>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="text-sm text-gray-400 font-pixelated">Jump</div>
-                <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated mt-1">Space</kbd>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="text-sm text-gray-400 font-pixelated">Restart</div>
-                <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated mt-1">R</kbd>
+                <div className="flex flex-col items-center">
+                  <div className="text-sm text-gray-400 font-pixelated">Jump</div>
+                  <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated mt-1">Space</kbd>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="text-sm text-gray-400 font-pixelated">Restart</div>
+                  <kbd className="px-2 py-1 rounded-none bg-gray-700 border-2 border-gray-500 text-xs text-yellow-300 font-pixelated mt-1">R</kbd>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+        
+        {/* BeatBox Studio View */}
+        {activeTab === 'beatbox' && (
+          <div className="max-w-5xl mx-auto space-y-6">
+            {/* BeatPads */}
+            <div className="bg-gray-800 rounded-none shadow-lg border-4 border-gray-900 p-6 pixelated-border">
+              <h2 className="text-xl text-yellow-300 font-pixelated mb-4">BeatBox Pads</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {sounds.map(sound => (
+                  <BeatPad 
+                    key={sound.id} 
+                    sound={sound} 
+                    onPlay={() => playSound(sound.id)}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            {/* Sequencer */}
+            <div className="bg-gray-800 rounded-none shadow-lg border-4 border-gray-900 p-6 pixelated-border">
+              <h2 className="text-xl text-yellow-300 font-pixelated mb-4">Beat Sequencer</h2>
+              <Sequencer />
+            </div>
+            
+            {/* Microphone Input */}
+            <div className="bg-gray-800 rounded-none shadow-lg border-4 border-gray-900 p-6 pixelated-border">
+              <h2 className="text-xl text-yellow-300 font-pixelated mb-4">Microphone Input</h2>
+              <MicrophoneInput />
+            </div>
+          </div>
+        )}
+        
+        {/* Music Player View */}
+        {activeTab === 'music' && (
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-gray-800 rounded-none shadow-lg border-4 border-gray-900 p-6 pixelated-border">
+              <h2 className="text-xl text-yellow-300 font-pixelated mb-4">Music Player</h2>
+              <MusicPlayer />
+            </div>
+          </div>
+        )}
       </main>
       
       <footer className="relative z-10 bg-gray-800 border-t-4 border-gray-900 py-6">
