@@ -50,12 +50,12 @@ const RecordingControls = ({ onRecordingStateChange, onPlay }: RecordingControls
 
   const playRecording = () => {
     setIsPlaying(true);
-    const duration = recorder.playRecording(onPlay);
+    const result = recorder.playRecording(onPlay);
     
-    if (duration) {
+    if (result && result.duration) {
       setTimeout(() => {
         setIsPlaying(false);
-      }, duration + 100);
+      }, result.duration + 100);
     } else {
       setIsPlaying(false);
     }

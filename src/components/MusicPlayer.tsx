@@ -84,8 +84,8 @@ const MusicPlayer = () => {
     if (audioRef.current) {
       // In a real app: audioRef.current.src = trackUrl
       // For demo, we'll just simulate playback
-      audioRef.current.duration = currentAlbum.tracks[currentTrackIndex].duration;
-      setDuration(currentAlbum.tracks[currentTrackIndex].duration);
+      const trackDuration = currentAlbum.tracks[currentTrackIndex].duration;
+      setDuration(trackDuration);
       setCurrentTime(0);
       
       if (isPlaying) {
