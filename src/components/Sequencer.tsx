@@ -1,7 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Square, Save, Trash2, Volume2, SkipBack, SkipForward } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
+import { Button } from '@/components/ui/button';
 import { playSound, sounds } from '../utils/audioUtils';
 
 interface SequencerProps {
@@ -23,14 +23,11 @@ const Sequencer = ({ onPatternChange }: SequencerProps) => {
     setIsPlaying(true);
     setCurrentStep(-1);
     
-    // Calculate interval based on tempo (BPM)
-    const stepTime = (60 / tempo) * 250; // Quarter notes
-    
+    const stepTime = (60 / tempo) * 250;
     intervalRef.current = setInterval(() => {
       setCurrentStep(step => {
         const nextStep = (step + 1) % 16;
         
-        // Play sounds for this step
         pattern.forEach((trackPattern, soundIndex) => {
           if (trackPattern[nextStep]) {
             playSound(sounds[soundIndex].id);
@@ -70,7 +67,6 @@ const Sequencer = ({ onPatternChange }: SequencerProps) => {
     const newTempo = value[0];
     setTempo(newTempo);
     
-    // Restart sequencer with new tempo if it's playing
     if (isPlaying) {
       stopSequencer();
       startSequencer();
@@ -105,7 +101,6 @@ const Sequencer = ({ onPatternChange }: SequencerProps) => {
       
       <div className="overflow-x-auto">
         <div className="min-w-max">
-          {/* Sequencer grid */}
           <div className="grid grid-cols-16 gap-0 mb-1">
             {Array(16).fill(0).map((_, i) => (
               <div 
@@ -119,7 +114,6 @@ const Sequencer = ({ onPatternChange }: SequencerProps) => {
             ))}
           </div>
           
-          {/* Tracks */}
           {pattern.map((trackPattern, trackIndex) => (
             <div key={`track-${trackIndex}`} className="flex items-center mb-2">
               <div 
