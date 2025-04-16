@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { sounds, playSound } from '../../utils/audioUtils';
@@ -86,24 +87,32 @@ const PlatformerGame: React.FC = () => {
             description: `Moving to level ${nextLevel}. Score: ${gameState.score}`,
           });
           
-          // Important: Reset the engine with the new level before updating state
+          // Load the correct next level data
+          let newLevelData: Level;
+          if (nextLevel === 2) {
+            newLevelData = level2;
+          } else {
+            newLevelData = level3;
+          }
+          
+          // Reset the engine with the new level
           if (engineRef.current) {
-            let newLevelData: Level;
-            if (nextLevel === 2) {
-              newLevelData = level2;
-            } else {
-              newLevelData = level3;
-            }
-            
             engineRef.current.resetLevel(newLevelData);
             
-            // Set the game state with next level but DO NOT set gameOver flag
+            // Important: Update the game state AFTER engine reset
             setGameState(prev => ({ 
               ...prev, 
               level: nextLevel,
               gameOver: false,  // Ensure gameOver is false
               isRunning: true   // Keep the game running
             }));
+            
+            // Explicitly start the engine again with the new level
+            setTimeout(() => {
+              if (engineRef.current) {
+                engineRef.current.start();
+              }
+            }, 100);
           }
         }
       },
