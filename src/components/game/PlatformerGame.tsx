@@ -43,6 +43,8 @@ const PlatformerGame: React.FC = () => {
         currentLevel = initialLevel;
     }
     
+    console.log("Loading level:", gameState.level, "currentLevel:", currentLevel);
+    
     // Create game engine with the appropriate level
     const engine = new GameEngine(canvas, context, currentLevel, {
       onScoreChange: (score) => setGameState(prev => ({ ...prev, score })),
@@ -78,18 +80,14 @@ const PlatformerGame: React.FC = () => {
         } else {
           // Move to next level
           const nextLevel = gameState.level + 1;
+          console.log("Moving to level:", nextLevel);
+          
           toast({
             title: "Level Complete!",
             description: `Moving to level ${nextLevel}. Score: ${gameState.score}`,
           });
           
-          // Update the game state to move to the next level
-          setGameState(prev => ({ 
-            ...prev, 
-            level: nextLevel
-          }));
-          
-          // We need to manually update to the next level
+          // Load the new level data
           let newLevel: Level;
           if (nextLevel === 2) {
             newLevel = level2;
@@ -97,11 +95,17 @@ const PlatformerGame: React.FC = () => {
             newLevel = level3;
           }
           
-          // Reset the engine with the new level
+          // Important: Reset the engine with the new level before updating state
           if (engineRef.current) {
             engineRef.current.resetLevel(newLevel);
             engineRef.current.start();
           }
+          
+          // After engine is reset, update the game state
+          setGameState(prev => ({ 
+            ...prev, 
+            level: nextLevel
+          }));
         }
       },
       onPlayerJump: () => {
