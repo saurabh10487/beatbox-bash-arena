@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { sounds, playSound } from '../../utils/audioUtils';
@@ -87,31 +86,24 @@ const PlatformerGame: React.FC = () => {
             description: `Moving to level ${nextLevel}. Score: ${gameState.score}`,
           });
           
-          // Load the new level data
-          let newLevel: Level;
-          if (nextLevel === 2) {
-            newLevel = level2;
-          } else {
-            newLevel = level3;
-          }
-          
           // Important: Reset the engine with the new level before updating state
           if (engineRef.current) {
-            engineRef.current.resetLevel(newLevel);
-          }
-          
-          // After engine is reset, update the game state
-          setGameState(prev => ({ 
-            ...prev, 
-            level: nextLevel,
-            // Make sure we're not triggering game over
-            gameOver: false,
-            isRunning: true
-          }));
-          
-          // Start the engine again to ensure it's running with the new level
-          if (engineRef.current) {
-            engineRef.current.start();
+            let newLevelData: Level;
+            if (nextLevel === 2) {
+              newLevelData = level2;
+            } else {
+              newLevelData = level3;
+            }
+            
+            engineRef.current.resetLevel(newLevelData);
+            
+            // Set the game state with next level but DO NOT set gameOver flag
+            setGameState(prev => ({ 
+              ...prev, 
+              level: nextLevel,
+              gameOver: false,  // Ensure gameOver is false
+              isRunning: true   // Keep the game running
+            }));
           }
         }
       },
@@ -142,7 +134,7 @@ const PlatformerGame: React.FC = () => {
     
     engineRef.current = engine;
     
-    // Start game
+    // Start game if it's not over or won
     if (!gameState.gameOver && !gameState.victory) {
       engine.start();
       setGameState(prev => ({ ...prev, isRunning: true }));
