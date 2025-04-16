@@ -1,9 +1,8 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 
-// Define sample albums
+// Define albums with actual audio file paths
 const albums = [
   {
     id: 1,
@@ -11,9 +10,9 @@ const albums = [
     artist: "Beat Master",
     coverUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bXVzaWN8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
     tracks: [
-      { id: 101, title: "Classic Beat 1", duration: 118 },
-      { id: 102, title: "Rhythm Flow", duration: 132 },
-      { id: 103, title: "Beat Drop", duration: 97 },
+      { id: 101, title: "Classic Beat 1", duration: 118, url: "/music/classic-beat.mp3" },
+      { id: 102, title: "Rhythm Flow", duration: 132, url: "/music/rhythm-flow.mp3" },
+      { id: 103, title: "Beat Drop", duration: 97, url: "/music/beat-drop.mp3" },
     ]
   },
   {
@@ -22,20 +21,8 @@ const albums = [
     artist: "DJ Pulse",
     coverUrl: "https://images.unsplash.com/photo-1445985543470-41fba5c3144a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bXVzaWN8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
     tracks: [
-      { id: 201, title: "Street Vibes", duration: 145 },
-      { id: 202, title: "City Rhythm", duration: 126 },
-      { id: 203, title: "Urban Flow", duration: 138 },
-    ]
-  },
-  {
-    id: 3,
-    title: "Electronic Fusion",
-    artist: "Synth Wave",
-    coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bXVzaWN8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
-    tracks: [
-      { id: 301, title: "Digital Dreams", duration: 162 },
-      { id: 302, title: "Electronic Pulse", duration: 143 },
-      { id: 303, title: "Synth Harmony", duration: 128 },
+      { id: 201, title: "Street Vibes", duration: 145, url: "/music/street-vibes.mp3" },
+      { id: 202, title: "City Rhythm", duration: 126, url: "/music/city-rhythm.mp3" },
     ]
   }
 ];
@@ -64,12 +51,17 @@ const MusicPlayer = () => {
       audioRef.current.addEventListener('loadedmetadata', () => {
         setDuration(audioRef.current?.duration || 0);
       });
+      audioRef.current.addEventListener('timeupdate', () => {
+        setCurrentTime(audioRef.current?.currentTime || 0);
+      });
     }
     
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.removeEventListener('ended', handleTrackEnd);
+        audioRef.current.removeEventListener('loadedmetadata', () => {});
+        audioRef.current.removeEventListener('timeupdate', () => {});
         audioRef.current = null;
       }
       if (animationRef.current) {
@@ -77,23 +69,28 @@ const MusicPlayer = () => {
       }
     };
   }, []);
-  
-  // For demo purposes, we're not actually loading audio files
-  // In a real app, you would set the audio source here
+
+  // Set audio source when track changes
   useEffect(() => {
-    if (audioRef.current) {
-      // In a real app: audioRef.current.src = trackUrl
-      // For demo, we'll just simulate playback
-      const trackDuration = currentAlbum.tracks[currentTrackIndex].duration;
-      setDuration(trackDuration);
-      setCurrentTime(0);
-      
+    const currentTrack = currentAlbum.tracks[currentTrackIndex];
+    if (audioRef.current && currentTrack) {
+      audioRef.current.src = currentTrack.url;
       if (isPlaying) {
         audioRef.current.play().catch(e => console.error("Playback error:", e));
       }
     }
   }, [currentAlbum, currentTrackIndex]);
-  
+
+  const playPause = () => {
+    if (!isPlaying) {
+      audioRef.current?.play();
+      setIsPlaying(true);
+    } else {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    }
+  };
+
   const handleTrackEnd = () => {
     if (repeat) {
       // Repeat current track
@@ -112,20 +109,6 @@ const MusicPlayer = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
       animationRef.current = requestAnimationFrame(updateProgress);
-    }
-  };
-  
-  const playPause = () => {
-    if (!isPlaying) {
-      audioRef.current?.play();
-      setIsPlaying(true);
-      animationRef.current = requestAnimationFrame(updateProgress);
-    } else {
-      audioRef.current?.pause();
-      setIsPlaying(false);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
     }
   };
   
