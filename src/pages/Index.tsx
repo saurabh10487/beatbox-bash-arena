@@ -169,6 +169,7 @@ const Index = () => {
       <footer className="relative z-10 bg-beatbox-muted/30 border-t border-beatbox-border py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-beatbox-foreground/60">
           <p>Created with precision and simplicity in mind. BeatBox Studio © {new Date().getFullYear()}</p>
+           <a href="https://www.instagram.com/mesaurabhsaxena/">Instagram</a> 
         </div>
       </footer>
     </div>
