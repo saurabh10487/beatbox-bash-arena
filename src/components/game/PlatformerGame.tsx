@@ -98,14 +98,21 @@ const PlatformerGame: React.FC = () => {
           // Important: Reset the engine with the new level before updating state
           if (engineRef.current) {
             engineRef.current.resetLevel(newLevel);
-            engineRef.current.start();
           }
           
           // After engine is reset, update the game state
           setGameState(prev => ({ 
             ...prev, 
-            level: nextLevel
+            level: nextLevel,
+            // Make sure we're not triggering game over
+            gameOver: false,
+            isRunning: true
           }));
+          
+          // Start the engine again to ensure it's running with the new level
+          if (engineRef.current) {
+            engineRef.current.start();
+          }
         }
       },
       onPlayerJump: () => {
