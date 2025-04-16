@@ -64,7 +64,7 @@ const PlatformerGame: React.FC = () => {
       onLevelComplete: () => {
         playSound('vocal');
         
-        // Final level victory
+        // Check if this is the final level
         if (gameState.level >= 3) {
           toast({
             title: "Victory!",
@@ -76,15 +76,32 @@ const PlatformerGame: React.FC = () => {
             isRunning: false  // Stop the game
           }));
         } else {
+          // Move to next level
+          const nextLevel = gameState.level + 1;
           toast({
             title: "Level Complete!",
-            description: `Moving to level ${gameState.level + 1}. Score: ${gameState.score}`,
+            description: `Moving to level ${nextLevel}. Score: ${gameState.score}`,
           });
-          // Move to next level without restarting the game
+          
+          // Update the game state to move to the next level
           setGameState(prev => ({ 
             ...prev, 
-            level: prev.level + 1
+            level: nextLevel
           }));
+          
+          // We need to manually update to the next level
+          let newLevel: Level;
+          if (nextLevel === 2) {
+            newLevel = level2;
+          } else {
+            newLevel = level3;
+          }
+          
+          // Reset the engine with the new level
+          if (engineRef.current) {
+            engineRef.current.resetLevel(newLevel);
+            engineRef.current.start();
+          }
         }
       },
       onPlayerJump: () => {
