@@ -160,7 +160,17 @@ const Game = () => {
       
       <footer className="relative z-10 bg-gray-800 border-t-4 border-gray-900 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-400 font-pixelated">
-          <p>Created with precision and simplicity in mind. BeatBox Studio © {new Date().getFullYear()}</p>
+          <p>Created by Saurabh Saxena with precision and simplicity in mind. BeatBox Studio © {new Date().getFullYear()}</p>
+          <div className="mt-2">
+            <a 
+              href="https://www.instagram.com/mesaurabhsaxena/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-yellow-300 hover:underline mx-2"
+            >
+              Follow on Instagram
+            </a>
+          </div>
         </div>
       </footer>
     </div>

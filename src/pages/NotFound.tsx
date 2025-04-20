@@ -19,6 +19,17 @@ const NotFound = () => {
         <a href="/" className="text-blue-500 hover:text-blue-700 underline">
           Return to Home
         </a>
+        <div className="mt-6 text-sm text-gray-500">
+          <p>Created by Saurabh Saxena</p>
+          <a 
+            href="https://www.instagram.com/mesaurabhsaxena/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-blue-500 hover:underline"
+          >
+            Follow on Instagram
+          </a>
+        </div>
       </div>
     </div>
   );
